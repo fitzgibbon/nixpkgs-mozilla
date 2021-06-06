@@ -6,7 +6,7 @@ self: super:
     stdenv = self.stdenv // {
       mkDerivation = args: self.stdenv.mkDerivation (args // {
         meta = args.meta // {
-          platforms = self.pkgs.lib.platforms.linux;
+          platforms = self.stdenv.lib.platforms.linux;
         };
       });
     };

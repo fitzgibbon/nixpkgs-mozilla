@@ -46,7 +46,7 @@ assert stdenv.isDarwin -> gnused != null;
 # The go frontend is written in c++
 assert langGo -> langCC;
 
-with pkgs.lib;
+with stdenv.lib;
 with builtins;
 
 let version = "4.7.3";
@@ -99,12 +99,12 @@ let version = "4.7.3";
 
     /* Platform flags */
     platformFlags = let
-        gccArch = pkgs.lib.attrByPath [ "platform" "gcc" "arch" ] null stdenv;
-        gccCpu = pkgs.lib.attrByPath [ "platform" "gcc" "cpu" ] null stdenv;
-        gccAbi = pkgs.lib.attrByPath [ "platform" "gcc" "abi" ] null stdenv;
-        gccFpu = pkgs.lib.attrByPath [ "platform" "gcc" "fpu" ] null stdenv;
-        gccFloat = pkgs.lib.attrByPath [ "platform" "gcc" "float" ] null stdenv;
-        gccMode = pkgs.lib.attrByPath [ "platform" "gcc" "mode" ] null stdenv;
+        gccArch = stdenv.lib.attrByPath [ "platform" "gcc" "arch" ] null stdenv;
+        gccCpu = stdenv.lib.attrByPath [ "platform" "gcc" "cpu" ] null stdenv;
+        gccAbi = stdenv.lib.attrByPath [ "platform" "gcc" "abi" ] null stdenv;
+        gccFpu = stdenv.lib.attrByPath [ "platform" "gcc" "fpu" ] null stdenv;
+        gccFloat = stdenv.lib.attrByPath [ "platform" "gcc" "float" ] null stdenv;
+        gccMode = stdenv.lib.attrByPath [ "platform" "gcc" "mode" ] null stdenv;
         withArch = if gccArch != null then " --with-arch=${gccArch}" else "";
         withCpu = if gccCpu != null then " --with-cpu=${gccCpu}" else "";
         withAbi = if gccAbi != null then " --with-abi=${gccAbi}" else "";
@@ -122,12 +122,12 @@ let version = "4.7.3";
     /* Cross-gcc settings */
     crossMingw = (cross != null && cross.libc == "msvcrt");
     crossConfigureFlags = let
-        gccArch = pkgs.lib.attrByPath [ "gcc" "arch" ] null cross;
-        gccCpu = pkgs.lib.attrByPath [ "gcc" "cpu" ] null cross;
-        gccAbi = pkgs.lib.attrByPath [ "gcc" "abi" ] null cross;
-        gccFpu = pkgs.lib.attrByPath [ "gcc" "fpu" ] null cross;
-        gccFloat = pkgs.lib.attrByPath [ "gcc" "float" ] null cross;
-        gccMode = pkgs.lib.attrByPath [ "gcc" "mode" ] null cross;
+        gccArch = stdenv.lib.attrByPath [ "gcc" "arch" ] null cross;
+        gccCpu = stdenv.lib.attrByPath [ "gcc" "cpu" ] null cross;
+        gccAbi = stdenv.lib.attrByPath [ "gcc" "abi" ] null cross;
+        gccFpu = stdenv.lib.attrByPath [ "gcc" "fpu" ] null cross;
+        gccFloat = stdenv.lib.attrByPath [ "gcc" "float" ] null cross;
+        gccMode = stdenv.lib.attrByPath [ "gcc" "mode" ] null cross;
         withArch = if gccArch != null then " --with-arch=${gccArch}" else "";
         withCpu = if gccCpu != null then " --with-cpu=${gccCpu}" else "";
         withAbi = if gccAbi != null then " --with-abi=${gccAbi}" else "";
@@ -228,8 +228,8 @@ stdenv.mkDerivation ({
         gnu_h = "gcc/config/gnu.h";
         extraCPPDeps =
              libc.propagatedBuildInputs
-          ++ pkgs.lib.optional (libpthreadCross != null) libpthreadCross
-          ++ pkgs.lib.optional (libpthread != null) libpthread;
+          ++ stdenv.lib.optional (libpthreadCross != null) libpthreadCross
+          ++ stdenv.lib.optional (libpthread != null) libpthread;
         extraCPPSpec =
           concatStrings (intersperse " "
                           (map (x: "-I${x}/include") extraCPPDeps));
@@ -289,17 +289,17 @@ stdenv.mkDerivation ({
     ++ (optional stdenv.isDarwin gnused)
     ;
 
-  NIX_LDFLAGS = pkgs.lib.optionalString  stdenv.isSunOS "-lm -ldl";
+  NIX_LDFLAGS = stdenv.lib.optionalString  stdenv.isSunOS "-lm -ldl";
 
   preConfigure = ''
     configureFlagsArray=(
-      ${pkgs.lib.optionalString (ppl != null && ppl ? dontDisableStatic && ppl.dontDisableStatic)
+      ${stdenv.lib.optionalString (ppl != null && ppl ? dontDisableStatic && ppl.dontDisableStatic)
         "'--with-host-libstdcxx=-lstdc++ -lgcc_s'"}
-      ${pkgs.lib.optionalString (ppl != null && stdenv.isSunOS)
+      ${stdenv.lib.optionalString (ppl != null && stdenv.isSunOS)
         "\"--with-host-libstdcxx=-Wl,-rpath,\$prefix/lib/amd64 -lstdc++\"
          \"--with-boot-ldflags=-L../prev-x86_64-pc-solaris2.11/libstdc++-v3/src/.libs\""}
     );
-    ${pkgs.lib.optionalString (stdenv.isSunOS && stdenv.is64bit)
+    ${stdenv.lib.optionalString (stdenv.isSunOS && stdenv.is64bit)
       ''
         export NIX_LDFLAGS=`echo $NIX_LDFLAGS | sed -e s~$prefix/lib~$prefix/lib/amd64~g`
         export LDFLAGS_FOR_TARGET="-Wl,-rpath,$prefix/lib/amd64 $LDFLAGS_FOR_TARGET"
@@ -376,11 +376,11 @@ stdenv.mkDerivation ({
     else "install";
 
   crossAttrs = let
-    xgccArch = pkgs.lib.attrByPath [ "gcc" "arch" ] null stdenv.cross;
-    xgccCpu = pkgs.lib.attrByPath [ "gcc" "cpu" ] null stdenv.cross;
-    xgccAbi = pkgs.lib.attrByPath [ "gcc" "abi" ] null stdenv.cross;
-    xgccFpu = pkgs.lib.attrByPath [ "gcc" "fpu" ] null stdenv.cross;
-    xgccFloat = pkgs.lib.attrByPath [ "gcc" "float" ] null stdenv.cross;
+    xgccArch = stdenv.lib.attrByPath [ "gcc" "arch" ] null stdenv.cross;
+    xgccCpu = stdenv.lib.attrByPath [ "gcc" "cpu" ] null stdenv.cross;
+    xgccAbi = stdenv.lib.attrByPath [ "gcc" "abi" ] null stdenv.cross;
+    xgccFpu = stdenv.lib.attrByPath [ "gcc" "fpu" ] null stdenv.cross;
+    xgccFloat = stdenv.lib.attrByPath [ "gcc" "float" ] null stdenv.cross;
     xwithArch = if xgccArch != null then " --with-arch=${xgccArch}" else "";
     xwithCpu = if xgccCpu != null then " --with-cpu=${xgccCpu}" else "";
     xwithAbi = if xgccAbi != null then " --with-abi=${xgccAbi}" else "";
@@ -510,15 +510,15 @@ stdenv.mkDerivation ({
     '';
 
     maintainers = [
-      pkgs.lib.maintainers.ludo
-      pkgs.lib.maintainers.viric
-      pkgs.lib.maintainers.shlevy
+      stdenv.lib.maintainers.ludo
+      stdenv.lib.maintainers.viric
+      stdenv.lib.maintainers.shlevy
     ];
 
     # Volunteers needed for the {Cyg,Dar}win ports of *PPL.
     # gnatboot is not available out of linux platforms, so we disable the darwin build
     # for the gnat (ada compiler).
-    platforms = pkgs.lib.platforms.linux ++ optionals (langAda == false && libelf == null) [ "i686-darwin" ];
+    platforms = stdenv.lib.platforms.linux ++ optionals (langAda == false && libelf == null) [ "i686-darwin" ];
   };
 }
 

@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
 
   hardeningDisable = [ "format" ];
 
-  buildInputs = pkgs.lib.optional stdenv.isDarwin libiconv;
+  buildInputs = stdenv.lib.optional stdenv.isDarwin libiconv;
 
   doCheck = false; # fails
 
@@ -40,8 +40,8 @@ stdenv.mkDerivation rec {
     '';
 
     repositories.git = git://git.savannah.gnu.org/libidn.git;
-    license = pkgs.lib.licenses.lgpl2Plus;
-    platforms = pkgs.lib.platforms.all;
+    license = stdenv.lib.licenses.lgpl2Plus;
+    platforms = stdenv.lib.platforms.all;
     maintainers = [ ];
   };
 }

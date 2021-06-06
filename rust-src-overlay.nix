@@ -3,8 +3,8 @@
 
 self: super:
 
-let mapAttrs = super.pkgs.lib.mapAttrs;
-    flip = super.pkgs.lib.flip;
+let mapAttrs = super.stdenv.lib.mapAttrs;
+    flip = super.stdenv.lib.flip;
 in {
   # install stable rust with rust-src:
   # "nix-env -i -A nixos.latest.rustChannels.stable.rust"

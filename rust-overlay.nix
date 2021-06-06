@@ -300,7 +300,7 @@ let
 
   fromManifest = sha256: manifest: { stdenv, lib, fetchurl, patchelf }:
     let manifestFile = if sha256 == null then builtins.fetchurl manifest else fetchurl { url = manifest; inherit sha256; };
-    in fromManifestFile manifestFile { inherit stdenv fetchurl patchelf; };
+    in fromManifestFile manifestFile { inherit stdenv lib fetchurl patchelf; };
 
 in
 
@@ -314,7 +314,7 @@ rec {
 
   rustChannelOf = { sha256 ? null, ... } @ manifest_args: fromManifest
     sha256 (manifest_v2_url manifest_args)
-    { inherit (self) stdenv fetchurl patchelf; }
+    { inherit (self) stdenv lib fetchurl patchelf; }
     ;
 
   # Set of packages which are automagically updated. Do not rely on these for

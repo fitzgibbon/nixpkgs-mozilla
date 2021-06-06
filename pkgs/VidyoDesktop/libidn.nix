@@ -1,4 +1,4 @@
-{ fetchurl, stdenv, libiconv }:
+{ fetchurl, stdenv, lib, libiconv }:
 
 stdenv.mkDerivation rec {
   name = "libidn-1.34";
